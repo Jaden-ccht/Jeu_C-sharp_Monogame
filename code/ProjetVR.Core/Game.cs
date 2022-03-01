@@ -9,17 +9,17 @@ namespace ProjetVR
     {
         Character character;
 
+        private KeyboardState keyboardState;
+
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
-        Rectangle rectangleSource;
 
         public ProjetVRGame()
         {
             _graphics = new GraphicsDeviceManager(this);
-            this.character = new Character(this);
+            this.character = new Character();
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
-            this.rectangleSource = new Rectangle(16, 22, 32, 32);
         }
 
         protected override void Initialize()
@@ -34,6 +34,7 @@ namespace ProjetVR
 
             // TODO: use this.Content to load your game content here
 
+            this.character.LoadContent(Content);
             this.character.entityTexture = Content.Load<Texture2D>("player");
         }
 
@@ -43,25 +44,30 @@ namespace ProjetVR
                 Exit();
 
             // TODO: Add your update logic here
-
-            character.Update(gameTime);
-
+            HandleInput(gameTime);
+            character.Update(gameTime, keyboardState);
 
             base.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.LawnGreen);
+            GraphicsDevice.Clear(Color.CornflowerBlue);
 
             // TODO: Add your drawing code here
-            _spriteBatch.Begin();
-            _spriteBatch.Draw(character.entityTexture, character.entityPosition, this.rectangleSource, Color.White, 0f, new Vector2(character.entityTexture.Width / 2, character.entityTexture.Height / 2), Vector2.One, SpriteEffects.None, 0f);
+            _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp);
+            //a utiliser par la suite
+            character.Draw(gameTime, _spriteBatch);
+            //_spriteBatch.Draw(character.entityTexture, character.entityPosition, this.rectangleSource, Color.White, 0f, new Vector2(character.entityTexture.Width / 2, character.entityTexture.Height / 2), Vector2.One, SpriteEffects.None, 0f);
             _spriteBatch.End();
 
-            character.Draw(gameTime);
-
             base.Draw(gameTime);
+        }
+
+        private void HandleInput(GameTime gameTime)
+        {
+            // get all of our input states
+            keyboardState = Keyboard.GetState();
         }
     }
 }
