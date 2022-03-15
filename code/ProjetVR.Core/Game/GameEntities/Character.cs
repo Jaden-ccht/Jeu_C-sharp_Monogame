@@ -20,15 +20,16 @@ namespace ProjetVR.Core.GameEntities
         private Animation hitAnimation;
 
         private int movement;
-
         private SpriteEffects flip = SpriteEffects.None;
 
         private Rectangle localBounds;
 
-        public Character()
+        public Character(SpriteBatch _s, Microsoft.Xna.Framework.Game game) 
+            : base(_s, game)
         {
             this.entitySpeed = 120f;
             this.sprite = new AnimationPlayer();
+            
         }
 
         public void LoadContent(ContentManager c)
@@ -99,7 +100,7 @@ namespace ProjetVR.Core.GameEntities
             return true;
         }
         
-        public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
+        public override void Draw(GameTime gameTime)
         {
             // Flip the sprite to face the way we are moving.
             if (movement == 2)
@@ -108,7 +109,7 @@ namespace ProjetVR.Core.GameEntities
                 flip = SpriteEffects.FlipHorizontally;
 
             // Draw that sprite.
-            sprite.Draw(gameTime, spriteBatch, entityPosition, flip);
+            sprite.Draw(gameTime, _sb, entityPosition, flip);
         }
     }
 }

@@ -1,9 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ProjetVR.Core.Game.GameEntities;
 
 namespace ProjetVR.Core.GameEntities
 {
-    public abstract class Entity
+    public abstract class Entity : GameObject
     {
         public Vector2 entityPosition { get; set; }
 
@@ -18,9 +19,18 @@ namespace ProjetVR.Core.GameEntities
 
         public Texture2D entityTexture { get; set; }
 
-        public Entity()
+        public Entity(SpriteBatch _s, Microsoft.Xna.Framework.Game game) 
+            : base(_s, game)
         {
-            entityPosition = new Vector2(0, 0);
+            entityPosition = new Vector2(100, 100);
         }
+       
+
+        public void setEntityPosition(int x, int y)
+        {
+            entityPosition = new Vector2(x, y);
+        }
+
+        
     }
 }

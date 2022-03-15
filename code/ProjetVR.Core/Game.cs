@@ -5,13 +5,15 @@ using ProjetVR.Core.GameEntities;
 using Apos.Gui;
 using Apos.Input;
 using FontStashSharp;
-
+using ProjetVR.Core.Game.GameEntities;
 
 namespace ProjetVR
 {
     public class ProjetVRGame : Game
     {
         Character character;
+        Gobelin gob;
+        Bear bear;
 
         private KeyboardState keyboardState;
 
@@ -27,7 +29,6 @@ namespace ProjetVR
         public ProjetVRGame()
         {
             _graphics = new GraphicsDeviceManager(this);
-            this.character = new Character();
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
         }
@@ -35,16 +36,27 @@ namespace ProjetVR
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            Window.AllowUserResizing = true;
+            Window.AllowUserResizing = false;
+            
             _graphics.PreferredBackBufferWidth = 1024;
             _graphics.PreferredBackBufferHeight = 527;
             _graphics.ApplyChanges();
+
+            _s = new SpriteBatch(GraphicsDevice);
+            this.character = new Character(_s, this);
+            this.gob = new Gobelin(_s, this);
+            this.bear = new Bear(_s, this);
+
+            gob.setEntityPosition(100, 100);
+            character.setEntityPosition(100, 100);
+            bear.setEntityPosition(200, 200);
+
             base.Initialize();
         }
 
         protected override void LoadContent()
         {
-            _s = new SpriteBatch(GraphicsDevice);
+            //_s = new SpriteBatch(GraphicsDevice);
             _background = Content.Load<Texture2D>("bg");
 
             // TODO: use this.Content to load your game content here
@@ -57,6 +69,8 @@ namespace ProjetVR
 
             this.character.LoadContent(Content);
             this.character.entityTexture = Content.Load<Texture2D>("player");
+            this.gob.LoadContent(Content);
+            this.bear.LoadContent(Content);
         }
 
         private string _name = string.Empty;
@@ -115,6 +129,8 @@ namespace ProjetVR
             // TODO: Add your update logic here
             HandleInput(gameTime);
             character.Update(gameTime, keyboardState);
+            gob.Update(gameTime, character);
+            bear.Update(gameTime, character);
 
             base.Update(gameTime);
         }
@@ -141,7 +157,13 @@ namespace ProjetVR
             
 
             if (_menu == Menu.Jeu)
-                character.Draw(gameTime, _s);
+            {
+                character.Draw(gameTime);
+                gob.Draw(gameTime);
+                bear.Draw(gameTime);
+                GraphicsDevice.Clear(Color.Black);
+            }
+                
             
             //_spriteBatch.Draw(character.entityTexture, character.entityPosition, this.rectangleSource, Color.White, 0f, new Vector2(character.entityTexture.Width / 2, character.entityTexture.Height / 2), Vector2.One, SpriteEffects.None, 0f);
             _s.End();
