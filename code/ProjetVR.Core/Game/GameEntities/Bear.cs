@@ -20,7 +20,7 @@ namespace ProjetVR.Core.Game.GameEntities
             : base(_s, game)
         {
             this.sprite = new AnimationPlayer();
-            this.entitySpeed = 40f;
+            this.EntitySpeed = 40f;
         }
 
         public void LoadContent(ContentManager c)
@@ -38,31 +38,31 @@ namespace ProjetVR.Core.Game.GameEntities
         public void Update(GameTime gameTime, 
             Character character)
         {
-            if (this.entityPosition == character.entityPosition)
+            if (this.EntityPosition == character.EntityPosition)
                 sprite.PlayAnimation(idleAnimation);
-            if (this.entityPosition.Y > character.entityPosition.Y) 
+            if (this.EntityPosition.Y > character.EntityPosition.Y) 
             {
-                this.entityPosition = new Vector2(this.entityPosition.X, this.entityPosition.Y - this.entitySpeed * (float)gameTime.ElapsedGameTime.TotalSeconds);
+                this.EntityPosition = new Vector2(this.EntityPosition.X, this.EntityPosition.Y - this.EntitySpeed * (float)gameTime.ElapsedGameTime.TotalSeconds);
                 sprite.PlayAnimation(runAnimation);
             }
                 
-            if (this.entityPosition.Y < character.entityPosition.Y)
+            if (this.EntityPosition.Y < character.EntityPosition.Y)
             {
-                this.entityPosition = new Vector2(this.entityPosition.X, this.entityPosition.Y + this.entitySpeed * (float)gameTime.ElapsedGameTime.TotalSeconds);
+                this.EntityPosition = new Vector2(this.EntityPosition.X, this.EntityPosition.Y + this.EntitySpeed * (float)gameTime.ElapsedGameTime.TotalSeconds);
                 sprite.PlayAnimation(runAnimation);
             }
 
-            if (this.entityPosition.X > character.entityPosition.X)
+            if (this.EntityPosition.X > character.EntityPosition.X)
             {
                 movement = 1;
-                this.entityPosition = new Vector2(this.entityPosition.X - this.entitySpeed * (float)gameTime.ElapsedGameTime.TotalSeconds, this.entityPosition.Y);
+                this.EntityPosition = new Vector2(this.EntityPosition.X - this.EntitySpeed * (float)gameTime.ElapsedGameTime.TotalSeconds, this.EntityPosition.Y);
                 sprite.PlayAnimation(runAnimation);
             }
 
-            if (this.entityPosition.X < character.entityPosition.X)
+            if (this.EntityPosition.X < character.EntityPosition.X)
             {
                 movement = 2;
-                this.entityPosition = new Vector2(this.entityPosition.X + this.entitySpeed * (float)gameTime.ElapsedGameTime.TotalSeconds, this.entityPosition.Y);
+                this.EntityPosition = new Vector2(this.EntityPosition.X + this.EntitySpeed * (float)gameTime.ElapsedGameTime.TotalSeconds, this.EntityPosition.Y);
                 sprite.PlayAnimation(runAnimation);
             }
         }
@@ -75,7 +75,7 @@ namespace ProjetVR.Core.Game.GameEntities
             else if (movement == 2)
                 flip = SpriteEffects.FlipHorizontally;
 
-            sprite.Draw(gameTime, _sb, entityPosition, flip);
+            sprite.Draw(gameTime, _sb, EntityPosition, flip);
         }
     }
 }

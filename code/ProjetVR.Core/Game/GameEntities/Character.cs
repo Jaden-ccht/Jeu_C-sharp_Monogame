@@ -2,7 +2,9 @@
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MonoGame.Extended.Tiled;
 using ProjetVR.Core.Game.Animations;
+using ProjetVR.Core.Game.Collisions;
 
 namespace ProjetVR.Core.GameEntities
 {
@@ -27,7 +29,7 @@ namespace ProjetVR.Core.GameEntities
         public Character(SpriteBatch _s, Microsoft.Xna.Framework.Game game) 
             : base(_s, game)
         {
-            this.entitySpeed = 120f;
+            this.EntitySpeed = 150f;
             this.sprite = new AnimationPlayer();
             
         }
@@ -46,36 +48,54 @@ namespace ProjetVR.Core.GameEntities
         }
 
         public void Update(GameTime gameTime,
-            KeyboardState keyboardState)
+            KeyboardState keyboardState, TiledMap map)
         {
+            Collisionneur col = new Collisionneur();
+            Vector2 pos;
             if (sprite.Animation == null)
                 sprite.PlayAnimation(idleAnimation);
-            if(checkHit())
+            if (CheckHit())
             {
                 if (keyboardState.IsKeyDown(Keys.Up) || keyboardState.IsKeyDown(Keys.Z))
                 {
-                    this.entityPosition = new Vector2(this.entityPosition.X, this.entityPosition.Y - this.entitySpeed * (float)gameTime.ElapsedGameTime.TotalSeconds);
-                    sprite.PlayAnimation(runAnimation);
+                    pos = new Vector2(this.EntityPosition.X, this.EntityPosition.Y - this.EntitySpeed * (float)gameTime.ElapsedGameTime.TotalSeconds);
+                    if (!col.IsCollision(pos, map))
+                    {
+                        this.EntityPosition = pos;
+                        sprite.PlayAnimation(runAnimation);
+                    }
                 }
 
                 if (keyboardState.IsKeyDown(Keys.Down) || keyboardState.IsKeyDown(Keys.S))
                 {
-                    this.entityPosition = new Vector2(this.entityPosition.X, this.entityPosition.Y + this.entitySpeed * (float)gameTime.ElapsedGameTime.TotalSeconds);
-                    sprite.PlayAnimation(runAnimation);
+                    pos = new Vector2(this.EntityPosition.X, this.EntityPosition.Y + this.EntitySpeed * (float)gameTime.ElapsedGameTime.TotalSeconds);
+                    if (!col.IsCollision(pos, map))
+                    {
+                        this.EntityPosition = pos;
+                        sprite.PlayAnimation(runAnimation);
+                    }
                 }
 
                 if (keyboardState.IsKeyDown(Keys.Left) || keyboardState.IsKeyDown(Keys.Q))
                 {
+                    pos = new Vector2(this.EntityPosition.X - this.EntitySpeed * (float)gameTime.ElapsedGameTime.TotalSeconds, this.EntityPosition.Y);
                     movement = 1;
-                    this.entityPosition = new Vector2(this.entityPosition.X - this.entitySpeed * (float)gameTime.ElapsedGameTime.TotalSeconds, this.entityPosition.Y);
-                    sprite.PlayAnimation(runAnimation);
+                    if (!col.IsCollision(pos, map))
+                    {
+                        this.EntityPosition = pos;
+                        sprite.PlayAnimation(runAnimation);
+                    }
                 }
 
                 if (keyboardState.IsKeyDown(Keys.Right) || keyboardState.IsKeyDown(Keys.D))
                 {
+                    pos = new Vector2(this.EntityPosition.X + this.EntitySpeed * (float)gameTime.ElapsedGameTime.TotalSeconds, this.EntityPosition.Y);
                     movement = 2;
-                    this.entityPosition = new Vector2(this.entityPosition.X + this.entitySpeed * (float)gameTime.ElapsedGameTime.TotalSeconds, this.entityPosition.Y);
-                    sprite.PlayAnimation(runAnimation);
+                    if (!col.IsCollision(pos, map))
+                    {
+                        this.EntityPosition = pos;
+                        sprite.PlayAnimation(runAnimation);
+                    }
                 }
                 if (keyboardState.IsKeyDown(Keys.Space))
                 {
@@ -89,7 +109,7 @@ namespace ProjetVR.Core.GameEntities
 
         }
 
-        private bool checkHit()
+        private bool CheckHit()
         {
             if(sprite.Animation == hitAnimation)
             {
@@ -109,7 +129,7 @@ namespace ProjetVR.Core.GameEntities
                 flip = SpriteEffects.FlipHorizontally;
 
             // Draw that sprite.
-            sprite.Draw(gameTime, _sb, entityPosition, flip);
+            sprite.Draw(gameTime, _sb, EntityPosition, flip);
         }
     }
 }

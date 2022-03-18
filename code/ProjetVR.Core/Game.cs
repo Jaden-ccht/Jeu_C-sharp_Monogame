@@ -6,14 +6,27 @@ using Apos.Gui;
 using Apos.Input;
 using FontStashSharp;
 using ProjetVR.Core.Game.GameEntities;
+using MonoGame.Extended.Tiled;
+using MonoGame.Extended.Tiled.Renderers;
+using ProjetVR.Core.Game.Levels;
 
 namespace ProjetVR
 {
     public class ProjetVRGame : Game
     {
-        Character character;
+        private Level currentLevel;
+
+        Character Player;
         Gobelin gob;
         Bear bear;
+
+        TiledMap _tiledMap1;
+        TiledMap _tiledMap2;
+        TiledMapRenderer _tiledMapRenderer1;
+        TiledMapRenderer _tiledMapRenderer2;
+
+        private string _name = string.Empty;
+        private Texture2D _background;
 
         private KeyboardState keyboardState;
 
@@ -43,40 +56,123 @@ namespace ProjetVR
             _graphics.ApplyChanges();
 
             _s = new SpriteBatch(GraphicsDevice);
-            this.character = new Character(_s, this);
-            this.gob = new Gobelin(_s, this);
-            this.bear = new Bear(_s, this);
-
-            gob.setEntityPosition(100, 100);
-            character.setEntityPosition(100, 100);
-            bear.setEntityPosition(200, 200);
+            this.Player = new Character(_s, this);
+            //this.gob = new Gobelin(_s, this);
+            //this.bear = new Bear(_s, this);
+            //gob.setEntityPosition(100, 100);
+            Player.setEntityPosition(100, 100);
+            //bear.setEntityPosition(200, 200);
 
             base.Initialize();
         }
 
         protected override void LoadContent()
         {
-            //_s = new SpriteBatch(GraphicsDevice);
             _background = Content.Load<Texture2D>("bg");
 
-            // TODO: use this.Content to load your game content here
+            // Load Menu
             FontSystem fontSystem = FontSystemFactory.Create(GraphicsDevice, 2048, 2048);
             fontSystem.AddFont(TitleContainer.OpenStream($"{Content.RootDirectory}/dpcomic.ttf"));
-
             GuiHelper.Setup(this, fontSystem);
             _ui = new IMGUI();
             GuiHelper.CurrentIMGUI = _ui;
 
-            this.character.LoadContent(Content);
-            this.character.entityTexture = Content.Load<Texture2D>("player");
-            this.gob.LoadContent(Content);
-            this.bear.LoadContent(Content);
+            //Load Entity
+            //this.Player.LoadContent(Content);
+            //this.gob.LoadContent(Content);
+            //this.bear.LoadContent(Content);
+
+            _tiledMap1 = Content.Load<TiledMap>("level1");
+            _tiledMapRenderer1 = new TiledMapRenderer(GraphicsDevice, _tiledMap1);
+
+            _tiledMap2 = Content.Load<TiledMap>("level2");
+            _tiledMapRenderer2 = new TiledMapRenderer(GraphicsDevice, _tiledMap2);
+
+            currentLevel = new Level(_tiledMap1, _tiledMapRenderer1, Player);
+
+            currentLevel.Player.LoadContent(Content);
         }
 
-        private string _name = string.Empty;
-        private Texture2D _background;
+        
 
         protected override void Update(GameTime gameTime)
+        {
+            MenuUpdate(gameTime);
+
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+                Exit();
+
+            // TODO: Add your update logic here
+            
+            HandleInput(gameTime);
+            if(_menu == Menu.Jeu)
+            {
+                currentLevel.MapRenderer.Update(gameTime);
+                currentLevel.Player.Update(gameTime, keyboardState, currentLevel.Map);
+                currentLevel.Update(gameTime);
+
+                if (currentLevel.NextLevelReached)
+                {
+                    currentLevel.Player.EntityPosition = new Vector2(currentLevel.Player.EntityPosition.X, 500);
+                    currentLevel = new Level(_tiledMap2, _tiledMapRenderer2, Player);
+                }
+            }
+            //Player.Update(gameTime, keyboardState);
+            
+            //gob.Update(gameTime, character);
+            //bear.Update(gameTime, character);
+
+            base.Update(gameTime);
+        }
+
+
+        enum Menu
+        {
+            Main,
+            PreJeu,
+            Jeu,
+            Quit
+        }
+        Menu _menu = Menu.Main;
+        protected override void Draw(GameTime gameTime)
+        {
+            GraphicsDevice.Clear(Color.Black);
+
+            // TODO: Add your drawing code here
+            _s.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp);
+
+            if (_menu != Menu.Jeu)
+            {
+                _s.Draw(_background, new Vector2(0, 0), Color.White);
+            }
+
+            if (_menu == Menu.Jeu)
+            {
+                
+                currentLevel.Draw(gameTime, _s);
+                //Player.Draw(gameTime);
+                //gob.Draw(gameTime);
+                //bear.Draw(gameTime);
+                //GraphicsDevice.Clear(Color.Black);
+            }
+            else
+                _s.End();
+                
+            
+            //_s.End();
+
+            _ui.Draw(gameTime);
+
+            base.Draw(gameTime);
+        }
+
+        private void HandleInput(GameTime gameTime)
+        {
+            // get all of our input states
+            keyboardState = Keyboard.GetState();
+        }
+
+        private void MenuUpdate(GameTime gameTime)
         {
             GuiHelper.UpdateSetup(gameTime);
 
@@ -115,68 +211,10 @@ namespace ProjetVR
 
                 if (Button.Put("Non", 30, Color.Khaki, 0, false).Clicked) _menu = Menu.Main;
             }
-            else if (_menu == Menu.Jeu)
-            {
-                Label.Put("Voici la vue temporaire du jeu", 30, Color.Khaki, 0, false);
-            }
+            
             MenuPanel.Pop();
 
             GuiHelper.UpdateCleanup();
-
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
-
-            // TODO: Add your update logic here
-            HandleInput(gameTime);
-            character.Update(gameTime, keyboardState);
-            gob.Update(gameTime, character);
-            bear.Update(gameTime, character);
-
-            base.Update(gameTime);
-        }
-
-        enum Menu
-        {
-            Main,
-            PreJeu,
-            Jeu,
-            Quit
-        }
-        Menu _menu = Menu.Main;
-
-        protected override void Draw(GameTime gameTime)
-        {
-            GraphicsDevice.Clear(Color.Black);
-
-            // TODO: Add your drawing code here
-            _s.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp);
-
-            _s.Draw(_background, new Vector2(0, 0), Color.White);
-            //a utiliser par la suite
-
-            
-
-            if (_menu == Menu.Jeu)
-            {
-                character.Draw(gameTime);
-                gob.Draw(gameTime);
-                bear.Draw(gameTime);
-                GraphicsDevice.Clear(Color.Black);
-            }
-                
-            
-            //_spriteBatch.Draw(character.entityTexture, character.entityPosition, this.rectangleSource, Color.White, 0f, new Vector2(character.entityTexture.Width / 2, character.entityTexture.Height / 2), Vector2.One, SpriteEffects.None, 0f);
-            _s.End();
-
-            _ui.Draw(gameTime);
-
-            base.Draw(gameTime);
-        }
-
-        private void HandleInput(GameTime gameTime)
-        {
-            // get all of our input states
-            keyboardState = Keyboard.GetState();
         }
     }
 }
