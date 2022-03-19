@@ -3,15 +3,15 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using ProjetVR.Core.Game.Animations;
-using ProjetVR.Core.Game.GameEntities;
+using ProjetVR.Core.GameEntities;
 using System;
 using System.IO;
 
-namespace ProjetVR.Core.GameEntities
+namespace ProjetVR.Core.Game.GameEntities
 {
-    public class Gobelin : Mob
+    public class Mush : Mob
     {
-       public Gobelin(SpriteBatch _s, Microsoft.Xna.Framework.Game game) 
+        public Mush(SpriteBatch _s, Microsoft.Xna.Framework.Game game) 
             : base(_s, game)
         {
             Sprite = new AnimationPlayer();
@@ -22,11 +22,12 @@ namespace ProjetVR.Core.GameEntities
 
         public override void LoadContent(ContentManager c)
         {
-            IdleAnimation = new Animation(c.Load<Texture2D>("idle2"), 0.1f, true, 4);
-            RunAnimation = new Animation(c.Load<Texture2D>("run2"), 0.1f, true, 6);
-            DeathAnimation = new Animation(c.Load<Texture2D>("death2"), 0.1f, false, 6);
+            IdleAnimation = new Animation(c.Load<Texture2D>("idle3"), 0.1f, true, 6);
+            RunAnimation = new Animation(c.Load<Texture2D>("run3"), 0.1f, true, 8);
+            DeathAnimation = new Animation(c.Load<Texture2D>("death3"), 0.1f, false, 6);
             Sprite.PlayAnimation(IdleAnimation);
-        }   
+        }
+
 
         public override void Draw(GameTime gameTime)
         {
@@ -39,4 +40,3 @@ namespace ProjetVR.Core.GameEntities
         }
     }
 }
-

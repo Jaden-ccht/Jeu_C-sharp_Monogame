@@ -6,7 +6,7 @@ using System.Text;
 
 namespace ProjetVR.Core.Game.Animations
 {
-    class AnimationPlayer
+    public class AnimationPlayer
     {
 
         /// <summary>
