@@ -15,9 +15,15 @@ using System.Text;
 
 namespace ProjetVR.Core.Game.Levels
 {
+    /// <summary>
+    /// Classe Level :
+    /// Agit comme un manager pour chaque niveau avec une map, une liste de créatures différentes
+    /// </summary>
     class Level
     {
-        
+        /// <summary>
+        /// La liste de créatures pour un niveau
+        /// </summary>
         public List<Mob> EnemyList
         {
             get { return enemyList; }
@@ -25,36 +31,54 @@ namespace ProjetVR.Core.Game.Levels
         }
         private List<Mob> enemyList;
 
-        public Character Player
+        /// <summary>
+        /// Le joueur
+        /// </summary>
+        public Player Player
         {
             get { return player; }
         }
-        private Character player;
+        private readonly Player player;
 
+        /// <summary>
+        /// La map
+        /// </summary>
         public TiledMap Map
         {
             get { return map; }
         }
-        private TiledMap map;
+        private readonly TiledMap map;
 
+        /// <summary>
+        /// Le mapRenderer
+        /// </summary>
         public TiledMapRenderer MapRenderer
         {
             get { return mapRenderer; }
         }
-        private TiledMapRenderer mapRenderer;
+        private readonly TiledMapRenderer mapRenderer;
 
+        /// <summary>
+        /// Un movement manager gérant tous les déplacements et autres actions
+        /// </summary>
         public MovementManager Mvm
         {
             get { return mvm; }
         }
-        private MovementManager mvm;
+        private readonly MovementManager mvm;
 
+        /// <summary>
+        /// Un collisionneur
+        /// </summary>
         public Collisionneur Col
         {
             get { return col; }
         }
-        private Collisionneur col;
+        private readonly Collisionneur col;
 
+        /// <summary>
+        /// Bool permettant de savoir si le niveau suivant a été atteint
+        /// </summary>
         public bool NextLevelReached
         {
             get { return nextLevelReached; }
@@ -62,6 +86,9 @@ namespace ProjetVR.Core.Game.Levels
         }
         private bool nextLevelReached;
 
+        /// <summary>
+        /// Bool permettant de savoir si le niveau précédent a été atteint
+        /// </summary>
         public bool PreviousLevelReached
         {
             get { return previousLevelReached; }
@@ -69,6 +96,9 @@ namespace ProjetVR.Core.Game.Levels
         }
         private bool previousLevelReached;
 
+        /// <summary>
+        /// Bool permettant de savoir si la zone de fin de jeu a été atteinte
+        /// </summary>
         public bool LevelEndReached
         {
             get { return levelEndReached; }
@@ -76,6 +106,9 @@ namespace ProjetVR.Core.Game.Levels
         }
         private bool levelEndReached;
 
+        /// <summary>
+        /// Bool permettant de savoir si le niveau c'est terminé suite à la mort du joueur
+        /// </summary>
         public bool LevelEnded
         {
             get { return levelEnded; }
@@ -83,7 +116,13 @@ namespace ProjetVR.Core.Game.Levels
         }
         private bool levelEnded;
 
-        public Level(TiledMap newmap, TiledMapRenderer newmaprenderer, Character crt)
+        /// <summary>
+        /// Constructeur de Level
+        /// </summary>
+        /// <param name="newmap"></param>
+        /// <param name="newmaprenderer"></param>
+        /// <param name="crt"></param>
+        public Level(TiledMap newmap, TiledMapRenderer newmaprenderer, Player crt)
         {
             map = newmap;
             mapRenderer = newmaprenderer;
@@ -97,6 +136,10 @@ namespace ProjetVR.Core.Game.Levels
             levelEnded = false;
         }
 
+        /// <summary>
+        /// Charge le contenu de toutes les créatures de la liste
+        /// </summary>
+        /// <param name="ctt"></param>
         public void LoadContent(ContentManager ctt)
         {
             foreach(Mob mob in EnemyList)
@@ -105,6 +148,11 @@ namespace ProjetVR.Core.Game.Levels
             }
         }
 
+        /// <summary>
+        /// Dessine les différentes Layer de la map ainsi que les entités dans un ordre logique afin de simuler une légère perspective
+        /// </summary>
+        /// <param name="gameTime"></param>
+        /// <param name="_spriteBatch"></param>
         public void Draw(GameTime gameTime, SpriteBatch _spriteBatch)
         {
             var scale = Matrix.CreateScale(2f);
@@ -131,11 +179,20 @@ namespace ProjetVR.Core.Game.Levels
             MapRenderer.Draw(Map.GetLayer("trees2"), scale);
         }
 
+        /// <summary>
+        /// Update du niveau :
+        /// La logique du jeu est dans cette méthode
+        /// Vérifie un éventuel changement de niveau
+        /// Déplace le joueur en fonctions des inputs du clavier
+        /// Pour chaque monstre : s'il se trouve dans une zone de coup porté par le joueur, son animation de mort est déclenchée
+        ///     si le monste est envie
+        ///         le déplace
+        ///         s'il touche le joueur, lance son animation de mort et attend 2 secondes avant de déclarer la fin du jeu
+        /// </summary>
+        /// <param name="gameTime"></param>
         public void Update(GameTime gameTime)
         {
             KeyboardState keyboardState = Keyboard.GetState();
-            enemyList = EnemyList.OrderBy(mob => mob.EntityPosition.Y).ToList();
-
             MapRenderer.Update(gameTime);
 
             if(col.NextLevelReached(player.EntityPosition))
@@ -181,9 +238,19 @@ namespace ProjetVR.Core.Game.Levels
             }           
         }
 
+        /// <summary>
+        /// Propriété permettant de sauvegarder le moment de mort du joueur
+        /// </summary>
         private TimeSpan TimeOfDeath;
+
+        /// <summary>
+        /// Propriété permettant de vérifier si la mort du joueur a déjà été enregistrée
+        /// </summary>
         private bool TimeOfDeathHasBeenRegistered = false;
 
+        /// <summary>
+        /// Permet de set les coordonnées de spawn des monstres aléatoirement dans la zone de spawn correspondante à la map du niveau
+        /// </summary>
         public void SetMobPositions()
         {
             Vector2 coo;

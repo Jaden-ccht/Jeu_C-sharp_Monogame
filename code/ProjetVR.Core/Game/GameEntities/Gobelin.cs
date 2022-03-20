@@ -9,9 +9,18 @@ using System.IO;
 
 namespace ProjetVR.Core.GameEntities
 {
+    /// <summary>
+    /// Classe Gobelin :
+    /// Hérite de Mob, correspond aux gobelins qui apparaissent sur la map
+    /// </summary>
     public class Gobelin : Mob
     {
-       public Gobelin(SpriteBatch _s, Microsoft.Xna.Framework.Game game) 
+        /// <summary>
+        /// Le constructeur attribue une vitesse aléatoire
+        /// </summary>
+        /// <param name="_s"></param>
+        /// <param name="game"></param>
+        public Gobelin(SpriteBatch _s, Microsoft.Xna.Framework.Game game) 
             : base(_s, game)
         {
             Sprite = new AnimationPlayer();
@@ -26,8 +35,13 @@ namespace ProjetVR.Core.GameEntities
             RunAnimation = new Animation(c.Load<Texture2D>("run2"), 0.1f, true, 6);
             DeathAnimation = new Animation(c.Load<Texture2D>("death2"), 0.1f, false, 6);
             Sprite.PlayAnimation(IdleAnimation);
-        }   
+        }
 
+        /// <summary>
+        /// Méthode permettant d'afficher le Gobelin
+        /// Même principe que la classe Player
+        /// </summary>
+        /// <param name="gameTime"></param>
         public override void Draw(GameTime gameTime)
         {
             if (Movement == 2)

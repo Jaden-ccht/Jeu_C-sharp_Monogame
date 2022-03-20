@@ -9,8 +9,17 @@ using System.IO;
 
 namespace ProjetVR.Core.Game.GameEntities
 {
+    /// <summary>
+    /// Classe Mush :
+    /// Hérite de Mob, correspond aux champignons qui apparaissent sur la map
+    /// </summary>
     public class Mush : Mob
     {
+        /// <summary>
+        /// Le constructeur attribue une vitesse aléatoire
+        /// </summary>
+        /// <param name="_s"></param>
+        /// <param name="game"></param>
         public Mush(SpriteBatch _s, Microsoft.Xna.Framework.Game game) 
             : base(_s, game)
         {
@@ -28,7 +37,11 @@ namespace ProjetVR.Core.Game.GameEntities
             Sprite.PlayAnimation(IdleAnimation);
         }
 
-
+        /// <summary>
+        /// Méthode permettant d'afficher le Mush
+        /// Même principe que la classe Player
+        /// </summary>
+        /// <param name="gameTime"></param>
         public override void Draw(GameTime gameTime)
         {
             if (Movement == 2)

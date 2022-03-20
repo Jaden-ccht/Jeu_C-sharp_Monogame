@@ -6,6 +6,11 @@ using ProjetVR.Core.Game.GameEntities;
 
 namespace ProjetVR.Core.Game.GameEntities
 {
+    /// <summary>
+    /// Classe Entity :
+    /// Classe abstraite dont héritent les classes Character et Mob
+    /// Permet d'instancier des entités ayant des animations, une position, une vitesse et un booléen pour savoir si l'entité est en vie
+    /// </summary>
     public abstract class Entity : GameObject
     {
         public AnimationPlayer Sprite
@@ -65,8 +70,6 @@ namespace ProjetVR.Core.Game.GameEntities
 
         public float EntitySpeed { get; set; }
 
-        public Texture2D EntityTexture { get; set; }
-
         public Entity(SpriteBatch _s, Microsoft.Xna.Framework.Game game) 
             : base(_s, game)
         {
@@ -78,6 +81,10 @@ namespace ProjetVR.Core.Game.GameEntities
             EntityPosition = new Vector2(x, y);
         }
 
+        /// <summary>
+        /// Permet de vérifier si l'animation de mort d'une entité est terminée ou non
+        /// </summary>
+        /// <returns>bool</returns>
         public bool CheckDead()
         {
             if (Sprite.Animation == DeathAnimation)
@@ -89,6 +96,10 @@ namespace ProjetVR.Core.Game.GameEntities
             return true;
         }
 
+        /// <summary>
+        /// Méthode abstraite permettant de charger le contenu des entités (textures pour chaque animation)
+        /// </summary>
+        /// <param name="c"></param>
         public abstract void LoadContent(ContentManager c);
     }
 }

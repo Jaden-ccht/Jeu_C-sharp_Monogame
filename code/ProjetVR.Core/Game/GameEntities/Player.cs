@@ -8,8 +8,15 @@ using ProjetVR.Core.Game.Collisions;
 
 namespace ProjetVR.Core.Game.GameEntities
 {
-    public class Character : Entity
-    {        
+    /// <summary>
+    /// Classe Player :
+    /// Entité correspondant au joueur
+    /// </summary>
+    public class Player : Entity
+    {
+        /// <summary>
+        /// Animation propre à Character (lorsque le joueur donne un coup)
+        /// </summary>
         public Animation HitAnimation
         {
             get { return hitAnimation; }
@@ -18,7 +25,7 @@ namespace ProjetVR.Core.Game.GameEntities
         private Animation hitAnimation;
 
 
-        public Character(SpriteBatch _s, Microsoft.Xna.Framework.Game game) 
+        public Player(SpriteBatch _s, Microsoft.Xna.Framework.Game game) 
             : base(_s, game)
         {
             this.EntitySpeed = 150f;
@@ -36,6 +43,10 @@ namespace ProjetVR.Core.Game.GameEntities
             Sprite.PlayAnimation(IdleAnimation);
         }
 
+        /// <summary>
+        /// Permet de vérifier si l'animation de coup d'une entité est terminée ou non
+        /// </summary>
+        /// <returns>bool</returns>
         public bool CheckHit()
         {
             if(Sprite.Animation == HitAnimation)
@@ -51,15 +62,18 @@ namespace ProjetVR.Core.Game.GameEntities
         }
 
         
+        /// <summary>
+        /// Méthode permettant d'afficher le Player
+        /// </summary>
+        /// <param name="gameTime"></param>
         public override void Draw(GameTime gameTime)
         {
-            // Flip the sprite to face the way we are moving.
+            // Retourne l'image afin d'avoir une orientation gauche et droite
             if (Movement == 2)
                 flip = SpriteEffects.None;
             else if (Movement == 1)
                 flip = SpriteEffects.FlipHorizontally;
 
-            // Draw that sprite.
             Sprite.Draw(gameTime, _sb, EntityPosition, flip);
         }
     }

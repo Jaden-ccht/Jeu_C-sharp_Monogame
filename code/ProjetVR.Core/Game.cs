@@ -16,28 +16,31 @@ namespace ProjetVR
 {
     public class ProjetVRGame : Game
     {
-        private Character Player;
+        private Player Player;
 
-        private Level currentLevel;
+        /// <summary>
+        /// Niveau actuel
+        /// </summary>
+        private Level CurrentLevel;
 
+        /// <summary>
+        /// Liste de niveaux
+        /// </summary>
         private List<Level> LevelList;
 
-        private TiledMap _tiledMap1;
-        private TiledMap _tiledMap2;
-        private TiledMap _tiledMap3;
-        private TiledMapRenderer _tiledMapRenderer1;
-        private TiledMapRenderer _tiledMapRenderer2;
-        private TiledMapRenderer _tiledMapRenderer3;
+        /// <summary>
+        /// Différentes map
+        /// </summary>
+        private TiledMap _tiledMap1, _tiledMap2, _tiledMap3;
+        private TiledMapRenderer _tiledMapRenderer1, _tiledMapRenderer2, _tiledMapRenderer3;
 
         private string _name = string.Empty;
-        private Texture2D _background;
-        private Texture2D _bgwin;
-        private Texture2D _bgloose;
+        private Texture2D _background, _bgwin, _bgloose;
 
-        private GraphicsDeviceManager _graphics;
+        private readonly GraphicsDeviceManager _graphics;
         private SpriteBatch _s;
         private IMGUI _ui;
-        private ICondition _quit = new AnyCondition(new KeyboardCondition(Keys.Escape), new GamePadCondition(GamePadButton.Back, 0));
+        private readonly ICondition _quit = new AnyCondition(new KeyboardCondition(Keys.Escape), new GamePadCondition(GamePadButton.Back, 0));
 
         public ProjetVRGame()
         {
@@ -47,9 +50,11 @@ namespace ProjetVR
             _menu = Menu.Main;
         }
 
+        /// <summary>
+        /// Initialise le spritebatch ainsi que le joueur
+        /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
             Window.AllowUserResizing = false;
             
             _graphics.PreferredBackBufferWidth = 1024;
@@ -58,11 +63,14 @@ namespace ProjetVR
 
             _s = new SpriteBatch(GraphicsDevice);
 
-            this.Player = new Character(_s, this);
+            Player = new Player(_s, this);
 
             base.Initialize();
         }
 
+        /// <summary>
+        /// Permet de charger tout le contenu (textures, maps, etc.)
+        /// </summary>
         protected override void LoadContent()
         {
             _background = Content.Load<Texture2D>("bg");
@@ -76,9 +84,11 @@ namespace ProjetVR
             _ui = new IMGUI();
             GuiHelper.CurrentIMGUI = _ui;
 
+            // Chargement des niveaux et création des créatures
             LoadLevels();
             CreateMobs();
 
+            // Chargement du contenu de chaque niveau
             foreach (Level lvl in LevelList)
             {
                 lvl.LoadContent(Content);
@@ -86,8 +96,11 @@ namespace ProjetVR
             Player.LoadContent(Content);
         }
 
-        
-
+        /// <summary>
+        /// Méthode update :
+        /// Logique du jeu, permettant le changement de niveau, la fin du jeu ou la transition entre les différents menus
+        /// </summary>
+        /// <param name="gameTime"></param>
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
@@ -97,42 +110,42 @@ namespace ProjetVR
 
             if (_menu == Menu.Jeu)
             { 
-                currentLevel.Update(gameTime);
+                CurrentLevel.Update(gameTime);
 
-                if (currentLevel.LevelEnded)
+                if (CurrentLevel.LevelEnded)
                 {
                     _menu = Menu.Defeat;
-                    currentLevel.LevelEnded = false;
+                    CurrentLevel.LevelEnded = false;
                     ReloadGame();
                 }
 
-                if (currentLevel.NextLevelReached)
+                if (CurrentLevel.NextLevelReached)
                 {
-                    currentLevel.SetMobPositions();
-                    currentLevel.NextLevelReached = false;
-                    currentLevel.PreviousLevelReached = false;
-                    int currentLevelIndex = LevelList.IndexOf(currentLevel);
+                    CurrentLevel.SetMobPositions();
+                    CurrentLevel.NextLevelReached = false;
+                    CurrentLevel.PreviousLevelReached = false;
+                    int currentLevelIndex = LevelList.IndexOf(CurrentLevel);
                     if(currentLevelIndex == 0)
-                        Player.EntityPosition = new Vector2(currentLevel.Player.EntityPosition.X, 470);
+                        Player.EntityPosition = new Vector2(CurrentLevel.Player.EntityPosition.X, 470);
                     else
-                        Player.EntityPosition = new Vector2(35, currentLevel.Player.EntityPosition.Y);
-                    currentLevel = LevelList[currentLevelIndex + 1];
+                        Player.EntityPosition = new Vector2(35, CurrentLevel.Player.EntityPosition.Y);
+                    CurrentLevel = LevelList[currentLevelIndex + 1];
                 }
-                if (currentLevel.PreviousLevelReached)
+                if (CurrentLevel.PreviousLevelReached)
                 {
-                    currentLevel.SetMobPositions();
-                    currentLevel.NextLevelReached = false;
-                    currentLevel.PreviousLevelReached = false;
-                    int currentLevelIndex = LevelList.IndexOf(currentLevel);
+                    CurrentLevel.SetMobPositions();
+                    CurrentLevel.NextLevelReached = false;
+                    CurrentLevel.PreviousLevelReached = false;
+                    int currentLevelIndex = LevelList.IndexOf(CurrentLevel);
                     if (currentLevelIndex == 1)
-                        Player.EntityPosition = new Vector2(currentLevel.Player.EntityPosition.X, 20);
+                        Player.EntityPosition = new Vector2(CurrentLevel.Player.EntityPosition.X, 20);
                     else
-                        Player.EntityPosition = new Vector2(960, currentLevel.Player.EntityPosition.Y);
-                    currentLevel = LevelList[currentLevelIndex - 1];
+                        Player.EntityPosition = new Vector2(960, CurrentLevel.Player.EntityPosition.Y);
+                    CurrentLevel = LevelList[currentLevelIndex - 1];
                 }
-                if (currentLevel.LevelEndReached)
+                if (CurrentLevel.LevelEndReached)
                 {
-                    currentLevel.LevelEndReached = false;
+                    CurrentLevel.LevelEndReached = false;
                     if ((LevelList[0].EnemyList.Count + LevelList[1].EnemyList.Count + LevelList[2].EnemyList.Count) == 0)
                     {
                         _menu = Menu.Win;
@@ -144,7 +157,9 @@ namespace ProjetVR
             base.Update(gameTime);
         }
 
-
+        /// <summary>
+        /// Enum composée de tous les types de fenetres
+        /// </summary>
         enum Menu
         {
             Main,
@@ -156,6 +171,10 @@ namespace ProjetVR
         }
         private Menu _menu;
 
+        /// <summary>
+        /// Méthode permettant l'affichage des différentes fênetres et de leur contenu correspondant
+        /// </summary>
+        /// <param name="gameTime"></param>
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.Black);
@@ -168,7 +187,6 @@ namespace ProjetVR
                 _s.Draw(_background, new Vector2(0, 0), Color.White);
 
             }
-
             if (_menu == Menu.Win)
                 _s.Draw(_bgwin, new Vector2(0, 0), Color.White);
 
@@ -177,7 +195,8 @@ namespace ProjetVR
 
             if (_menu == Menu.Jeu)
             {
-                currentLevel.Draw(gameTime, _s);
+                // Affichage du contenu du niveau actuel
+                CurrentLevel.Draw(gameTime, _s);
             }
             else
                 _s.End();
@@ -186,6 +205,9 @@ namespace ProjetVR
             base.Draw(gameTime);
         }
 
+        /// <summary>
+        /// Permet de recharger le jeu en créant de nouvelles créatures et en réinitialisant les propriétés du joueur
+        /// </summary>
         private void ReloadGame()
         {
             Player.IsAlive = true;
@@ -199,9 +221,13 @@ namespace ProjetVR
             {
                 lvl.LoadContent(Content);
             }
-            currentLevel = LevelList[0];
+            CurrentLevel = LevelList[0];
         }
 
+        /// <summary>
+        /// Update des différents menus
+        /// </summary>
+        /// <param name="gameTime"></param>
         private void MenuUpdate(GameTime gameTime)
         {
             GuiHelper.UpdateSetup(gameTime);
@@ -243,14 +269,14 @@ namespace ProjetVR
             }
             else if (_menu == Menu.Win)
             {
-                Label.Put($"Bravo {_name}, Tu as reussi a atteindre la fin !", 30, Color.Khaki, 0, false);
-                if (Button.Put("Rejouer", 30, Color.Khaki, 0, false).Clicked && _name.Length > 0) _menu = Menu.Jeu;
+                Label.Put($"Felicitations {_name}, tu as reussi a sortir de ces bois !", 30, Color.Khaki, 0, false);
+                if (Button.Put("Accueil", 30, Color.Khaki, 0, false).Clicked && _name.Length > 0) _menu = Menu.Main;
                 if (Button.Put("Quitter", 30, Color.Khaki, 0, false).Clicked) _menu = Menu.Quit;
             }
             else if (_menu == Menu.Defeat)
             {
-                Label.Put($"{_name}, veux-tu retenter ta chance ?", 30, Color.Khaki, 0, false);
-                if (Button.Put("Rejouer", 30, Color.Khaki, 0, false).Clicked && _name.Length > 0) _menu = Menu.Jeu;
+                Label.Put($"{_name}, veux-tu retenter ta chance dans ces dangereux bois ?", 30, Color.Khaki, 0, false);
+                if (Button.Put("Accueil", 30, Color.Khaki, 0, false).Clicked && _name.Length > 0) _menu = Menu.Main;
                 if (Button.Put("Quitter", 30, Color.Khaki, 0, false).Clicked) _menu = Menu.Quit;
             }
 
@@ -259,6 +285,9 @@ namespace ProjetVR
             GuiHelper.UpdateCleanup();
         }
 
+        /// <summary>
+        /// Chargement des différents niveaux avec leur map correspondante
+        /// </summary>
         private void LoadLevels()
         {
             _tiledMap1 = Content.Load<TiledMap>("level1");
@@ -274,13 +303,18 @@ namespace ProjetVR
             _tiledMapRenderer3 = new TiledMapRenderer(GraphicsDevice, _tiledMap3);
             Level lvl3 = new Level(_tiledMap3, _tiledMapRenderer3, Player);
 
-            LevelList = new List<Level>();
-            LevelList.Add(lvl1);
-            LevelList.Add(lvl2);
-            LevelList.Add(lvl3);
-            currentLevel = LevelList[0];
+            LevelList = new List<Level>
+            {
+                lvl1,
+                lvl2,
+                lvl3
+            };
+            CurrentLevel = LevelList[0];
         }
 
+        /// <summary>
+        /// Création des créatures pour chaque niveau
+        /// </summary>
         private void CreateMobs()
         {
             LevelList[0].EnemyList.AddRange(new List<Mob>

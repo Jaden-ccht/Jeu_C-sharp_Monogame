@@ -8,6 +8,10 @@ using System.Text;
 
 namespace ProjetVR.Core.Game.GameEntities
 {
+    /// <summary>
+    /// Classe abstraite Mob :
+    /// Hérite d'Entity, correspond aux créatures qui apparaissent sur la map
+    /// </summary>
     public abstract class Mob : Entity
     {
         public Mob(SpriteBatch _s, Microsoft.Xna.Framework.Game game)

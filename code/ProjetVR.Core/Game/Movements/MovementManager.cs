@@ -9,15 +9,31 @@ using System.Text;
 
 namespace ProjetVR.Core.Game.Movements
 {
+    /// <summary>
+    /// Classe MovementManager :
+    /// Gère les déplacements et actions du joueur
+    /// Gère aussi les déplacements des créatures
+    /// </summary>
     class MovementManager
     {
+        /// <summary>
+        /// Compteur permettant de connaître le temps depuis le dernier coup porté par le joueur
+        /// Permet d'appliquer un cooldown pour éviter le spam de coups portés
+        /// </summary>
         public float TimeSinceLastHit
         {
             get { return timeSinceLastHit; }
         }
         private float timeSinceLastHit = 1f;
 
-        public void Deplacer(Character player, Collisionneur col, GameTime gameTime, KeyboardState keyboardState)
+        /// <summary>
+        /// Permet la gestion des actions du joueur en fonction des inputs du claviers à chaque update
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="col"></param>
+        /// <param name="gameTime"></param>
+        /// <param name="keyboardState"></param>
+        public void Deplacer(Player player, Collisionneur col, GameTime gameTime, KeyboardState keyboardState)
         {
             Vector2 pos;
             timeSinceLastHit += (float)gameTime.ElapsedGameTime.TotalSeconds;
@@ -84,7 +100,15 @@ namespace ProjetVR.Core.Game.Movements
             }
         }
 
-        public void DeplacerMob(Mob mob, Character player, Collisionneur col, GameTime gameTime)
+        /// <summary>
+        /// Permet le déplacement d'une créature en fonction des coordonnées du joueur
+        /// Les déplacements de sont réalisés que si le joueur est proche de la créature
+        /// </summary>
+        /// <param name="mob"></param>
+        /// <param name="player"></param>
+        /// <param name="col"></param>
+        /// <param name="gameTime"></param>
+        public void DeplacerMob(Mob mob, Player player, Collisionneur col, GameTime gameTime)
         {
             if (!player.IsAlive)
                 mob.Sprite.PlayAnimation(mob.IdleAnimation);
@@ -138,7 +162,13 @@ namespace ProjetVR.Core.Game.Movements
             }
         }
 
-        private bool IsArround(Character player, Mob mob)
+        /// <summary>
+        /// Permet de vérifier si un joueur est proche d'une créature
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="mob"></param>
+        /// <returns></returns>
+        private bool IsArround(Player player, Mob mob)
         {
             if ((Math.Abs(player.EntityPosition.X - mob.EntityPosition.X) < 300) && (Math.Abs(player.EntityPosition.Y - mob.EntityPosition.Y) < 200))
                 return true;

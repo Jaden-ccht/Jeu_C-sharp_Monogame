@@ -10,26 +10,39 @@ using Windows.UI.Xaml;
 
 namespace ProjetVR.Core.Game.Collisions
 {
+    /// <summary>
+    /// Classe Collisionneur
+    /// Permet la gestion de toutes les collisions et autres interractions pour une map précise
+    /// </summary>
     class Collisionneur
     {
-        public TiledMap MapToCheck
-        {
-            get { return mapToCheck; }
-        }
-        private TiledMap mapToCheck;
+        /// <summary>
+        /// La map sur laquelle gérer les collisions
+        /// </summary>
+        private readonly TiledMap MapToCheck;
 
+        /// <summary>
+        /// Constructeur de Collisionneur
+        /// </summary>
+        /// <param name="map"></param>
         public Collisionneur(TiledMap map)
         {
-            mapToCheck = map;
+            MapToCheck = map;
         }
 
+        /// <summary>
+        /// Vérifie les éventuelles collisions aux coordonnées passées en paramètre pour un type d'Entity lui aussi passé en paramètre
+        /// </summary>
+        /// <param name="ett"></param>
+        /// <param name="vec"></param>
+        /// <returns></returns>
         public bool IsCollision(Entity ett, Vector2 vec)
         {
-            TiledMapTileLayer layer = (TiledMapTileLayer) mapToCheck.GetLayer("collisions");
+            TiledMapTileLayer layer = (TiledMapTileLayer) MapToCheck.GetLayer("collisions");
             ushort x1 = (ushort) (Math.Ceiling(vec.X / 32) -1);
             ushort y1 = (ushort)(Math.Ceiling(vec.Y / 32));
             ushort x2, y2;
-            if (ett.GetType() == typeof(Character))
+            if (ett.GetType() == typeof(Player))
             {
                 x2 = (ushort)(Math.Ceiling((vec.X + (float)26) / 32) - 1);
                 y2 = (ushort)(Math.Ceiling((vec.Y + (float)10) / 32));
@@ -47,22 +60,29 @@ namespace ProjetVR.Core.Game.Collisions
                 y2 = (ushort)(Math.Ceiling((vec.Y - (float)10) / 32));
             }
             
+            // Vérifie s'il n'y a pas de Tile aux coordonnées souhaitées
             try
             {
                 if (layer.GetTile(x1, y1).IsBlank && layer.GetTile(x1, y2).IsBlank && layer.GetTile(x2, y1).IsBlank && layer.GetTile(x2, y2).IsBlank)
                     return false;
                 return true;
             }
-            catch (IndexOutOfRangeException exc)
+            // Si les coordonnées sont hors-map, il y a collision
+            catch
             {
                 return true;
             }
         }
 
-
+        /// <summary>
+        /// Permet de vérifier si le joueur a atteint une zone de changement de niveau (suivant)
+        /// Même principe que IsCollision()
+        /// </summary>
+        /// <param name="vec"></param>
+        /// <returns></returns>
         public bool NextLevelReached(Vector2 vec)
         {
-            TiledMapTileLayer layer = (TiledMapTileLayer)mapToCheck.GetLayer("next");
+            TiledMapTileLayer layer = (TiledMapTileLayer)MapToCheck.GetLayer("next");
             if (layer == null)
                 return false;
             ushort x1 = (ushort)(Math.Ceiling(vec.X / 32) - 1);
@@ -75,9 +95,15 @@ namespace ProjetVR.Core.Game.Collisions
             return true;
         }
 
+        /// <summary>
+        /// Permet de vérifier si le joueur a atteint une zone de changement de niveau (précédent)
+        /// Même principe que IsCollision()
+        /// </summary>
+        /// <param name="vec"></param>
+        /// <returns></returns>
         public bool PreviousLevelReached(Vector2 vec)
         {
-            TiledMapTileLayer layer = (TiledMapTileLayer)mapToCheck.GetLayer("previous");
+            TiledMapTileLayer layer = (TiledMapTileLayer)MapToCheck.GetLayer("previous");
             if (layer == null)
                 return false;
             ushort x1 = (ushort)(Math.Ceiling(vec.X / 32) - 1);
@@ -90,9 +116,15 @@ namespace ProjetVR.Core.Game.Collisions
             return true;
         }
 
+        /// <summary>
+        /// Permet de vérifier si le joueur a atteint la zone de fin de jeu
+        /// Même principe que IsCollision
+        /// </summary>
+        /// <param name="vec"></param>
+        /// <returns></returns>
         public bool EndReached(Vector2 vec)
         {
-            TiledMapTileLayer layer = (TiledMapTileLayer)mapToCheck.GetLayer("end");
+            TiledMapTileLayer layer = (TiledMapTileLayer)MapToCheck.GetLayer("end");
             if (layer == null)
                 return false;
             ushort x1 = (ushort)(Math.Ceiling(vec.X / 32) - 1);
@@ -105,7 +137,13 @@ namespace ProjetVR.Core.Game.Collisions
             return true;
         }
 
-        public bool IsPlayerTouched(Character player, Mob mob)
+        /// <summary>
+        /// Permet de vérifier si un Mob est entré en contact avec le joueur
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="mob"></param>
+        /// <returns></returns>
+        public bool IsPlayerTouched(Player player, Mob mob)
         {
             if((player.EntityPosition.X - mob.EntityPosition.X) > 0)
             {
@@ -120,7 +158,13 @@ namespace ProjetVR.Core.Game.Collisions
             return false;
         }
 
-        public bool IsHitCollision(Character player, Mob mob)
+        /// <summary>
+        /// Permet de vérifier si le coup porté par le joueur a touché le mob passé en paramètre
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="mob"></param>
+        /// <returns></returns>
+        public bool IsHitCollision(Player player, Mob mob)
         {
             if ((player.EntityPosition.X - mob.EntityPosition.X) > 0)
             {
@@ -142,9 +186,16 @@ namespace ProjetVR.Core.Game.Collisions
             }
         }
 
+        /// <summary>
+        /// Permet de vérifier si les coordonnées passées en paramètres sont situées dans une zone de spawn de la map
+        /// Utilisée pour le spawn aléatoire des créatures
+        /// </summary>
+        /// <param name="ett"></param>
+        /// <param name="vec"></param>
+        /// <returns></returns>
         public bool IsSpawnZone(Entity ett, Vector2 vec)
         {
-            TiledMapTileLayer layer = (TiledMapTileLayer)mapToCheck.GetLayer("spawnzone");
+            TiledMapTileLayer layer = (TiledMapTileLayer)MapToCheck.GetLayer("spawnzone");
             ushort x1 = (ushort)(Math.Ceiling(vec.X / 32) - 1);
             ushort y1 = (ushort)(Math.Ceiling((vec.Y - (float)15) / 32));
             ushort x2, y2;
@@ -159,7 +210,7 @@ namespace ProjetVR.Core.Game.Collisions
                     return true;
                 return false;
             }
-            catch (IndexOutOfRangeException exc)
+            catch
             {
                 return false;
             }
