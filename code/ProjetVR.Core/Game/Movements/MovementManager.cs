@@ -20,10 +20,6 @@ namespace ProjetVR.Core.Game.Movements
         /// Compteur permettant de connaître le temps depuis le dernier coup porté par le joueur
         /// Permet d'appliquer un cooldown pour éviter le spam de coups portés
         /// </summary>
-        public float TimeSinceLastHit
-        {
-            get { return timeSinceLastHit; }
-        }
         private float timeSinceLastHit = 1f;
 
         /// <summary>
