@@ -116,13 +116,16 @@ namespace ProjetVR.Core.Game.Levels
                     mapRenderer.Draw(layer, scale);
                 }
             }
-            
-            foreach (Mob mob in EnemyList)
-            {
-                mob.Draw(gameTime);
-            }
-            Player.Draw(gameTime);
 
+            List<Entity> OrderToDraw = new List<Entity>();
+            OrderToDraw.AddRange(EnemyList);
+            OrderToDraw.Add(player);
+            OrderToDraw = OrderToDraw.OrderBy(entity => entity.EntityPosition.Y).ToList();
+
+            foreach (Entity ett in OrderToDraw)
+            {
+                ett.Draw(gameTime);
+            }
             _spriteBatch.End();
             MapRenderer.Draw(Map.GetLayer("trees"), scale);
             MapRenderer.Draw(Map.GetLayer("trees2"), scale);
@@ -144,7 +147,7 @@ namespace ProjetVR.Core.Game.Levels
             mvm.Deplacer(player, col, gameTime, keyboardState);
             foreach (Mob mob in EnemyList.ToList())
             {
-                if (keyboardState.IsKeyDown(Keys.Space))
+                if (keyboardState.IsKeyDown(Keys.Space) && !player.CheckHit())
                 {
                     if (col.IsHitCollision(player, mob) && player.Sprite.Animation != player.DeathAnimation)
                     {

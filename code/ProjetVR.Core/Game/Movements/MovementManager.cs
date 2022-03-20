@@ -11,9 +11,17 @@ namespace ProjetVR.Core.Game.Movements
 {
     class MovementManager
     {
+        public float TimeSinceLastHit
+        {
+            get { return timeSinceLastHit; }
+        }
+        private float timeSinceLastHit = 1f;
+
         public void Deplacer(Character player, Collisionneur col, GameTime gameTime, KeyboardState keyboardState)
         {
             Vector2 pos;
+            timeSinceLastHit += (float)gameTime.ElapsedGameTime.TotalSeconds;
+
             if (player.Sprite.Animation == null)
                 player.Sprite.PlayAnimation(player.IdleAnimation);
             if(!player.IsAlive)
@@ -63,9 +71,10 @@ namespace ProjetVR.Core.Game.Movements
                             player.Sprite.PlayAnimation(player.RunAnimation);
                         }
                     }
-                    if (keyboardState.IsKeyDown(Keys.Space))
+                    if (keyboardState.IsKeyDown(Keys.Space) && timeSinceLastHit >= 1f)
                     {
                         player.Sprite.PlayAnimation(player.HitAnimation);
+                        timeSinceLastHit = 0f;
                     }
                     if (keyboardState.GetPressedKeyCount() == 0)
                     {
@@ -131,7 +140,7 @@ namespace ProjetVR.Core.Game.Movements
 
         private bool IsArround(Character player, Mob mob)
         {
-            if ((Math.Abs(player.EntityPosition.X - mob.EntityPosition.X) < 250) && (Math.Abs(player.EntityPosition.Y - mob.EntityPosition.Y) < 150))
+            if ((Math.Abs(player.EntityPosition.X - mob.EntityPosition.X) < 300) && (Math.Abs(player.EntityPosition.Y - mob.EntityPosition.Y) < 200))
                 return true;
             return false;
         }
