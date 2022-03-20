@@ -31,6 +31,8 @@ namespace ProjetVR
 
         private string _name = string.Empty;
         private Texture2D _background;
+        private Texture2D _bgwin;
+        private Texture2D _bgloose;
 
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _s;
@@ -64,6 +66,8 @@ namespace ProjetVR
         protected override void LoadContent()
         {
             _background = Content.Load<Texture2D>("bg");
+            _bgwin = Content.Load<Texture2D>("win");
+            _bgloose = Content.Load<Texture2D>("loose");
 
             // Load Menu
             FontSystem fontSystem = FontSystemFactory.Create(GraphicsDevice, 2048, 2048);
@@ -97,7 +101,7 @@ namespace ProjetVR
 
                 if (currentLevel.LevelEnded)
                 {
-                    _menu = Menu.Main;
+                    _menu = Menu.Defeat;
                     currentLevel.LevelEnded = false;
                     ReloadGame();
                 }
@@ -131,7 +135,7 @@ namespace ProjetVR
                     currentLevel.LevelEndReached = false;
                     if ((LevelList[0].EnemyList.Count + LevelList[1].EnemyList.Count + LevelList[2].EnemyList.Count) == 0)
                     {
-                        _menu = Menu.Main;
+                        _menu = Menu.Win;
                         ReloadGame();
                     }
                 }
@@ -146,7 +150,9 @@ namespace ProjetVR
             Main,
             PreJeu,
             Jeu,
-            Quit
+            Quit, 
+            Defeat,
+            Win
         }
         private Menu _menu;
 
@@ -155,13 +161,19 @@ namespace ProjetVR
             GraphicsDevice.Clear(Color.Black);
 
             _s.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp);
-            
 
-            if (_menu != Menu.Jeu)
+
+            if (_menu == Menu.Main || _menu == Menu.Quit || _menu == Menu.PreJeu)
             {
                 _s.Draw(_background, new Vector2(0, 0), Color.White);
-                
+
             }
+
+            if (_menu == Menu.Win)
+                _s.Draw(_bgwin, new Vector2(0, 0), Color.White);
+
+            if (_menu == Menu.Defeat)
+                _s.Draw(_bgloose, new Vector2(0, 0), Color.White);
 
             if (_menu == Menu.Jeu)
             {
@@ -229,7 +241,19 @@ namespace ProjetVR
 
                 if (Button.Put("Non", 30, Color.Khaki, 0, false).Clicked) _menu = Menu.Main;
             }
-            
+            else if (_menu == Menu.Win)
+            {
+                Label.Put($"Bravo {_name}, Tu as reussi a atteindre la fin !", 30, Color.Khaki, 0, false);
+                if (Button.Put("Rejouer", 30, Color.Khaki, 0, false).Clicked && _name.Length > 0) _menu = Menu.Jeu;
+                if (Button.Put("Quitter", 30, Color.Khaki, 0, false).Clicked) _menu = Menu.Quit;
+            }
+            else if (_menu == Menu.Defeat)
+            {
+                Label.Put($"{_name}, veux-tu retenter ta chance ?", 30, Color.Khaki, 0, false);
+                if (Button.Put("Rejouer", 30, Color.Khaki, 0, false).Clicked && _name.Length > 0) _menu = Menu.Jeu;
+                if (Button.Put("Quitter", 30, Color.Khaki, 0, false).Clicked) _menu = Menu.Quit;
+            }
+
             MenuPanel.Pop();
 
             GuiHelper.UpdateCleanup();
