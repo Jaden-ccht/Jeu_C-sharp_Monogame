@@ -190,7 +190,7 @@ namespace ProjetVR.Core.Game.Levels
             foreach (Mob mob in EnemyList)
             {
                 coo = new Vector2(new Random().Next(60, 1000), new Random().Next(20, 460));
-                while(col.IsCollision(mob, coo))
+                while(!col.IsSpawnZone(mob, coo))
                     coo = new Vector2(new Random().Next(60, 1000), new Random().Next(20, 460));
                 mob.EntityPosition = coo;
             }

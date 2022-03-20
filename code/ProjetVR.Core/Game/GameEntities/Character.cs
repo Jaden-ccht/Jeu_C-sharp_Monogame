@@ -31,7 +31,7 @@ namespace ProjetVR.Core.Game.GameEntities
         {
             IdleAnimation = new Animation(c.Load<Texture2D>("idle"), 0.1f, true, 6);
             RunAnimation = new Animation(c.Load<Texture2D>("run"), 0.1f, true, 6);
-            HitAnimation = new Animation(c.Load<Texture2D>("hit"), 0.1f, true, 4);
+            HitAnimation = new Animation(c.Load<Texture2D>("hit"), 0.1f, false, 4);
             DeathAnimation = new Animation(c.Load<Texture2D>("death"), 0.1f, false, 3);
             Sprite.PlayAnimation(IdleAnimation);
         }
@@ -41,7 +41,10 @@ namespace ProjetVR.Core.Game.GameEntities
             if(Sprite.Animation == HitAnimation)
             {
                 if (Sprite.FrameIndex == HitAnimation.FrameCount - 1)
+                {
+                    Sprite.PlayAnimation(IdleAnimation);
                     return true;
+                }                    
                 return false;
             }
             return true;

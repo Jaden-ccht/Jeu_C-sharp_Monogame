@@ -141,5 +141,28 @@ namespace ProjetVR.Core.Game.Collisions
                 return false;
             }
         }
+
+        public bool IsSpawnZone(Entity ett, Vector2 vec)
+        {
+            TiledMapTileLayer layer = (TiledMapTileLayer)mapToCheck.GetLayer("spawnzone");
+            ushort x1 = (ushort)(Math.Ceiling(vec.X / 32) - 1);
+            ushort y1 = (ushort)(Math.Ceiling((vec.Y - (float)15) / 32));
+            ushort x2, y2;
+            y2 = (ushort)(Math.Ceiling((vec.Y - (float)10) / 32));
+            if (ett.GetType() == typeof(Gobelin))
+                x2 = (ushort)(Math.Ceiling((vec.X + (float)14) / 32) - 1);
+            else
+                x2 = (ushort)(Math.Ceiling((vec.X + (float)12) / 32) - 1);
+            try
+            {
+                if (!layer.GetTile(x1, y1).IsBlank && !layer.GetTile(x1, y2).IsBlank && !layer.GetTile(x2, y1).IsBlank && !layer.GetTile(x2, y2).IsBlank)
+                    return true;
+                return false;
+            }
+            catch (IndexOutOfRangeException exc)
+            {
+                return false;
+            }
+        }
     }
 }
