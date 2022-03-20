@@ -15,7 +15,7 @@ Nous avons choisi le framework Monogame pour réaliser ce jeu.
 
 ###### Objectif du jeu
 
-Vous incarnez un personnage qui doit nettoyer une étrange forêt peuplé de gobelin et de champignons malveillants.
+Vous incarnez un personnage qui doit nettoyer une étrange forêt peuplée de gobelin et de champignons malveillants.
 
 Trois niveaux sont disponibles, plus vous avancez dans les niveaux, plus ça se complique.
 
