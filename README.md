@@ -9,7 +9,7 @@ Nous avons choisi le framework Monogame pour réaliser ce jeu.
 
 ###### Vidéo de présentation 
 
-[Vidéo](https://www.youtube.com/watch?v=fsD2U7LXFfQ)
+[![Vidéo](https://img.youtube.com/vi/fsD2U7LXFfQ/0.jpg)](https://www.youtube.com/watch?v=fsD2U7LXFfQ)
 
 ## But du jeu
 
